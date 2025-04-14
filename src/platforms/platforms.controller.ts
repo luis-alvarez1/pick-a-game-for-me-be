@@ -9,6 +9,12 @@ import { RoleEnum } from 'src/auth/enums/roles.enum';
 export class PlatformsController {
   constructor(private readonly platformsService: PlatformsService) {}
 
+  @Get()
+  @Auth()
+  findAll() {
+    return this.platformsService.findAll();
+  }
+
   @Post()
   @Auth(RoleEnum.Admin)
   create(@Body() createPlatformDto: CreatePlatformDto) {
