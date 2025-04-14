@@ -17,7 +17,9 @@ export class PlatformsService {
   ) {}
 
   async create(createPlatformDto: CreatePlatformDto) {
-    const exists = await this.findOneByName(createPlatformDto.name);
+    const exists = await this.platformRepository.findOneBy({
+      name: createPlatformDto.name,
+    });
 
     if (exists) {
       throw new BadRequestException('Platform already exists');
@@ -28,8 +30,8 @@ export class PlatformsService {
     return await this.platformRepository.save(platform);
   }
 
-  findAll() {
-    return `This action returns all platforms`;
+  async findAll() {
+    return await this.platformRepository.find();
   }
 
   async findOneByName(name: string) {
@@ -41,6 +43,7 @@ export class PlatformsService {
 
     return platform;
   }
+
   async findOne(id: number) {
     const platform = await this.platformRepository.findOneBy({ id });
 

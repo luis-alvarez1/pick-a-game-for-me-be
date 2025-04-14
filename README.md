@@ -62,30 +62,96 @@ npm run start:dev
 
 ## API Documentation
 
+### Authentication
+
+#### Login
+
+```http
+POST /auth/login
+```
+
+Body:
+
+```json
+{
+  "email": "user@example.com",
+  "password": "your_password"
+}
+```
+
+Response:
+
+```json
+{
+  "token": "your_jwt_token"
+}
+```
+
+### Users
+
+#### Sign Up
+
+```http
+POST /users/signup
+```
+
+Body:
+
+```json
+{
+  "email": "user@example.com",
+  "password": "your_password",
+  "name": "User Name"
+}
+```
+
+#### Get User by ID
+
+```http
+GET /users/:id
+```
+
+Headers:
+
+```http
+Authorization: Bearer your_jwt_token
+```
+
+Note: Requires Admin role
+
+#### Update User
+
+```http
+PATCH /users/:id
+```
+
+Headers:
+
+```http
+Authorization: Bearer your_jwt_token
+```
+
+Body:
+
+```json
+{
+  "name": "Updated Name",
+  "email": "updated@example.com"
+}
+```
+
 ### Games
-
-#### Search Games
-
-```http
-GET /games/search
-```
-
-Query Parameters:
-
-- `name` (optional): Search games by name (case-insensitive, partial match)
-- `completed` (optional): Filter by completion status (true/false)
-- `platformId` (optional): Filter by platform ID
-
-Example:
-
-```http
-GET /games/search?name=mario&completed=true&platformId=1
-```
 
 #### Create Game
 
 ```http
 POST /games
+```
+
+Headers:
+
+```http
+Authorization: Bearer your_jwt_token
 ```
 
 Body:
@@ -104,16 +170,34 @@ Body:
 GET /games
 ```
 
+Headers:
+
+```http
+Authorization: Bearer your_jwt_token
+```
+
 #### Get Game by ID
 
 ```http
 GET /games/:id
 ```
 
+Headers:
+
+```http
+Authorization: Bearer your_jwt_token
+```
+
 #### Update Game
 
 ```http
 PATCH /games/:id
+```
+
+Headers:
+
+```http
+Authorization: Bearer your_jwt_token
 ```
 
 Body:
@@ -132,21 +216,112 @@ Body:
 DELETE /games/:id
 ```
 
-## Authentication
-
-Most endpoints require authentication. Include the JWT token in the Authorization header:
+Headers:
 
 ```http
 Authorization: Bearer your_jwt_token
 ```
 
+Note: Requires Admin role
+
+#### Search Games
+
+```http
+GET /games/search
+```
+
+Headers:
+
+```http
+Authorization: Bearer your_jwt_token
+```
+
+Query Parameters:
+
+- `name` (optional): Search games by name (case-insensitive, partial match)
+- `completed` (optional): Filter by completion status (true/false)
+- `platformId` (optional): Filter by platform ID
+
+Example:
+
+```http
+GET /games/search?name=mario&completed=true&platformId=1
+```
+
+### Platforms
+
+#### Create Platform
+
+```http
+POST /platforms
+```
+
+Headers:
+
+```http
+Authorization: Bearer your_jwt_token
+```
+
+Body:
+
+```json
+{
+  "name": "Platform Name"
+}
+```
+
+Note: Requires Admin role
+
+#### Get Platform by ID
+
+```http
+GET /platforms/:id
+```
+
+Headers:
+
+```http
+Authorization: Bearer your_jwt_token
+```
+
+#### Update Platform
+
+```http
+PATCH /platforms/:id
+```
+
+Headers:
+
+```http
+Authorization: Bearer your_jwt_token
+```
+
+Body:
+
+```json
+{
+  "name": "Updated Platform Name"
+}
+```
+
+Note: Requires Admin role
+
+## Authentication
+
+All endpoints except `/auth/login` and `/users/signup` require authentication. Include the JWT token in the Authorization header:
+
+```http
+Authorization: Bearer your_jwt_token
+```
+
+Some endpoints require specific roles:
+
+- Admin role required for:
+  - DELETE /games/:id
+  - POST /platforms
+  - PATCH /platforms/:id
+  - GET /users/:id
+
 ## Development
 
 - Run tests: `npm run test`
-- Run tests with coverage: `npm run test:cov`
-- Lint: `npm run lint`
-- Format code: `npm run format`
-
-## License
-
-This project is licensed under the Apache 2.0 License.
