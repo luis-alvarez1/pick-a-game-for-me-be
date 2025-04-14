@@ -43,7 +43,9 @@ export class GamesService {
   }
 
   async findAll() {
-    return await this.gamesRepository.find();
+    return await this.gamesRepository.find({
+      relations: ['platform'],
+    });
   }
 
   async findOne(id: number) {
