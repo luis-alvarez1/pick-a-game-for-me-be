@@ -248,6 +248,20 @@ Example:
 GET /games/search?name=mario&completed=true&platformId=1
 ```
 
+#### Pick Random Game
+
+```http
+GET /games/pick
+```
+
+Headers:
+
+```http
+Authorization: Bearer your_jwt_token
+```
+
+Returns a random game from your collection.
+
 ### Platforms
 
 #### Create Platform
