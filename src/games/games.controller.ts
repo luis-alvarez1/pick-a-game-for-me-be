@@ -7,6 +7,7 @@ import {
   Param,
   Delete,
   Query,
+  BadRequestException,
 } from '@nestjs/common';
 import { GamesService } from './games.service';
 import { CreateGameDto } from './dto/create-game.dto';
@@ -31,24 +32,6 @@ export class GamesController {
     return this.gamesService.findAll();
   }
 
-  @Get(':id')
-  @Auth()
-  findOne(@Param('id') id: string) {
-    return this.gamesService.findOne(+id);
-  }
-
-  @Patch(':id')
-  @Auth()
-  update(@Param('id') id: string, @Body() updateGameDto: UpdateGameDto) {
-    return this.gamesService.update(+id, updateGameDto);
-  }
-
-  @Delete(':id')
-  @Auth(RoleEnum.Admin)
-  remove(@Param('id') id: string) {
-    return this.gamesService.remove(+id);
-  }
-
   @Get('search')
   @Auth()
   search(@Query() searchGameDto: SearchGameDto) {
@@ -59,5 +42,35 @@ export class GamesController {
   @Auth()
   pick() {
     return this.gamesService.pick();
+  }
+
+  @Get(':id')
+  @Auth()
+  findOne(@Param('id') id: string) {
+    const parsedId = parseInt(id, 10);
+    if (isNaN(parsedId)) {
+      throw new BadRequestException('Invalid game ID');
+    }
+    return this.gamesService.findOne(parsedId);
+  }
+
+  @Patch(':id')
+  @Auth()
+  update(@Param('id') id: string, @Body() updateGameDto: UpdateGameDto) {
+    const parsedId = parseInt(id, 10);
+    if (isNaN(parsedId)) {
+      throw new BadRequestException('Invalid game ID');
+    }
+    return this.gamesService.update(parsedId, updateGameDto);
+  }
+
+  @Delete(':id')
+  @Auth(RoleEnum.Admin)
+  remove(@Param('id') id: string) {
+    const parsedId = parseInt(id, 10);
+    if (isNaN(parsedId)) {
+      throw new BadRequestException('Invalid game ID');
+    }
+    return this.gamesService.remove(parsedId);
   }
 }
