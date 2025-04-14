@@ -107,4 +107,18 @@ export class GamesService {
 
     return await queryBuilder.getMany();
   }
+
+  async pick() {
+    const game = await this.gamesRepository
+      .createQueryBuilder('game')
+      .orderBy('RANDOM()')
+      .limit(1)
+      .getOne();
+
+    if (!game) {
+      throw new NotFoundException('No games found');
+    }
+
+    return game;
+  }
 }

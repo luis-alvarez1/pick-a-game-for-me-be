@@ -54,4 +54,10 @@ export class GamesController {
   search(@Query() searchGameDto: SearchGameDto) {
     return this.gamesService.search(searchGameDto);
   }
+
+  @Get('pick')
+  @Auth()
+  pick() {
+    return this.gamesService.pick();
+  }
 }
