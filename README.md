@@ -559,52 +559,6 @@ Response:
 
 Note: Requires Admin role
 
-#### Search Games
-
-```http
-GET /games/search
-```
-
-Headers:
-
-```http
-Authorization: Bearer your_jwt_token
-```
-
-Query Parameters:
-
-- `name` (optional): Search games by name (case-insensitive, partial match)
-  - Example: `name=mario` will match "Super Mario Bros", "Mario Kart", etc.
-- `completed` (optional): Filter by completion status
-  - Accepts: `true` or `false` (as strings)
-  - Example: `completed=true`
-- `platformId` (optional): Filter by platform ID
-  - Must be a valid number
-  - Example: `platformId=1`
-
-Example:
-
-```http
-GET /games/search?name=mario&completed=true&platformId=1
-```
-
-Response:
-
-```json
-[
-  {
-    "id": 1,
-    "name": "Super Mario Bros",
-    "completed": true,
-    "isActive": true,
-    "platform": {
-      "id": 1,
-      "name": "Nintendo Switch"
-    }
-  }
-]
-```
-
 ## Authentication
 
 All endpoints except `/auth/login` and `/users/signup` require authentication. Include the JWT token in the Authorization header:
