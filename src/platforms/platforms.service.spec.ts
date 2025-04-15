@@ -14,6 +14,7 @@ describe('PlatformsService', () => {
   const mockPlatform = {
     id: 1,
     name: 'Test Platform',
+    games: [],
   };
 
   beforeEach(async () => {
@@ -24,6 +25,7 @@ describe('PlatformsService', () => {
           provide: getRepositoryToken(Platform),
           useValue: {
             findOneBy: jest.fn(),
+            findOne: jest.fn(),
             create: jest.fn(),
             save: jest.fn(),
             find: jest.fn(),
@@ -83,16 +85,18 @@ describe('PlatformsService', () => {
 
   describe('findOneByName', () => {
     it('should return a platform by name', async () => {
-      jest
-        .spyOn(platformRepository, 'findOneBy')
-        .mockResolvedValue(mockPlatform);
+      jest.spyOn(platformRepository, 'findOne').mockResolvedValue(mockPlatform);
 
       const result = await service.findOneByName('Test Platform');
       expect(result).toEqual(mockPlatform);
+      expect(platformRepository.findOne).toHaveBeenCalledWith({
+        where: { name: 'Test Platform' },
+        relations: ['games'],
+      });
     });
 
     it('should throw NotFoundException if platform not found', async () => {
-      jest.spyOn(platformRepository, 'findOneBy').mockResolvedValue(null);
+      jest.spyOn(platformRepository, 'findOne').mockResolvedValue(null);
 
       await expect(
         service.findOneByName('Non-existent Platform'),
@@ -102,23 +106,25 @@ describe('PlatformsService', () => {
 
   describe('findOne', () => {
     it('should return a platform by id', async () => {
-      jest
-        .spyOn(platformRepository, 'findOneBy')
-        .mockResolvedValue(mockPlatform);
+      jest.spyOn(platformRepository, 'findOne').mockResolvedValue(mockPlatform);
 
       const result = await service.findOne(1);
       expect(result).toEqual(mockPlatform);
+      expect(platformRepository.findOne).toHaveBeenCalledWith({
+        where: { id: 1 },
+        relations: ['games'],
+      });
     });
 
     it('should throw NotFoundException if platform not found', async () => {
-      jest.spyOn(platformRepository, 'findOneBy').mockResolvedValue(null);
+      jest.spyOn(platformRepository, 'findOne').mockResolvedValue(null);
 
       await expect(service.findOne(999)).rejects.toThrow(NotFoundException);
     });
   });
 
   describe('update', () => {
-    it('should update a platform', async () => {
+    it('should update a platform successfully', async () => {
       const updatePlatformDto: UpdatePlatformDto = {
         name: 'Updated Platform',
       };

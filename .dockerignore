@@ -9,4 +9,6 @@ dist
 coverage
 .vscode
 .idea
-*.log 
+*.log
+junit.xml
+test-results/ 

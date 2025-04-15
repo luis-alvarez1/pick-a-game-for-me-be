@@ -4,6 +4,13 @@ import { GamesService } from './games.service';
 import { CreateGameDto } from './dto/create-game.dto';
 import { UpdateGameDto } from './dto/update-game.dto';
 import { SearchGameDto } from './dto/search-game.dto';
+import { Auth } from 'src/auth/decorators/auth.decorator';
+import { RoleEnum } from 'src/auth/enums/roles.enum';
+import { BadRequestException } from '@nestjs/common';
+
+jest.mock('src/auth/decorators/auth.decorator', () => ({
+  Auth: () => jest.fn(),
+}));
 
 describe('GamesController', () => {
   let controller: GamesController;
@@ -30,6 +37,7 @@ describe('GamesController', () => {
             update: jest.fn(),
             remove: jest.fn(),
             search: jest.fn(),
+            pick: jest.fn(),
           },
         },
       ],
@@ -77,6 +85,19 @@ describe('GamesController', () => {
       expect(result).toEqual(mockGame);
       expect(service.findOne).toHaveBeenCalledWith(1);
     });
+
+    it('should throw BadRequestException for invalid id', async () => {
+      try {
+        await controller.findOne('invalid');
+        fail('Expected BadRequestException to be thrown');
+      } catch (error: unknown) {
+        if (error instanceof BadRequestException) {
+          expect(error.message).toBe('Invalid game ID');
+        } else {
+          fail('Expected BadRequestException to be thrown');
+        }
+      }
+    });
   });
 
   describe('update', () => {
@@ -95,6 +116,19 @@ describe('GamesController', () => {
       expect(result).toEqual({ ...mockGame, ...updateGameDto });
       expect(service.update).toHaveBeenCalledWith(1, updateGameDto);
     });
+
+    it('should throw BadRequestException for invalid id', async () => {
+      try {
+        await controller.update('invalid', {});
+        fail('Expected BadRequestException to be thrown');
+      } catch (error: unknown) {
+        if (error instanceof BadRequestException) {
+          expect(error.message).toBe('Invalid game ID');
+        } else {
+          fail('Expected BadRequestException to be thrown');
+        }
+      }
+    });
   });
 
   describe('remove', () => {
@@ -107,6 +141,19 @@ describe('GamesController', () => {
       const result = await controller.remove('1');
       expect(result).toEqual({ ...mockGame, isActive: false });
       expect(service.remove).toHaveBeenCalledWith(1);
+    });
+
+    it('should throw BadRequestException for invalid id', async () => {
+      try {
+        await controller.remove('invalid');
+        fail('Expected BadRequestException to be thrown');
+      } catch (error: unknown) {
+        if (error instanceof BadRequestException) {
+          expect(error.message).toBe('Invalid game ID');
+        } else {
+          fail('Expected BadRequestException to be thrown');
+        }
+      }
     });
   });
 
@@ -123,6 +170,16 @@ describe('GamesController', () => {
       const result = await controller.search(searchGameDto);
       expect(result).toEqual([mockGame]);
       expect(service.search).toHaveBeenCalledWith(searchGameDto);
+    });
+  });
+
+  describe('pick', () => {
+    it('should return a random game', async () => {
+      jest.spyOn(service, 'pick').mockResolvedValue(mockGame);
+
+      const result = await controller.pick();
+      expect(result).toEqual(mockGame);
+      expect(service.pick).toHaveBeenCalled();
     });
   });
 });

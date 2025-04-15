@@ -35,6 +35,17 @@ pipeline {
             }
         }
 
+        stage('Run Tests') {
+            steps {
+                sh 'npm run test:ci'
+            }
+            post {
+                always {
+                    junit 'junit.xml'
+                }
+            }
+        }
+
         stage('Build TypeScript') {
             steps {
                 sh 'npm run build'

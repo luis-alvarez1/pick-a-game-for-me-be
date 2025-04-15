@@ -36,6 +36,7 @@ describe('GamesService', () => {
           provide: getRepositoryToken(Game),
           useValue: {
             findOneBy: jest.fn(),
+            findOne: jest.fn(),
             create: jest.fn(),
             save: jest.fn(),
             find: jest.fn(),
@@ -43,7 +44,10 @@ describe('GamesService', () => {
               leftJoinAndSelect: jest.fn().mockReturnThis(),
               where: jest.fn().mockReturnThis(),
               andWhere: jest.fn().mockReturnThis(),
+              orderBy: jest.fn().mockReturnThis(),
+              limit: jest.fn().mockReturnThis(),
               getMany: jest.fn(),
+              getOne: jest.fn(),
             }),
           },
         },
@@ -108,19 +112,26 @@ describe('GamesService', () => {
 
       const result = await service.findAll();
       expect(result).toEqual([mockGame]);
+      expect(gamesRepository.find).toHaveBeenCalledWith({
+        relations: ['platform'],
+      });
     });
   });
 
   describe('findOne', () => {
     it('should return a game by id', async () => {
-      jest.spyOn(gamesRepository, 'findOneBy').mockResolvedValue(mockGame);
+      jest.spyOn(gamesRepository, 'findOne').mockResolvedValue(mockGame);
 
       const result = await service.findOne(1);
       expect(result).toEqual(mockGame);
+      expect(gamesRepository.findOne).toHaveBeenCalledWith({
+        where: { id: 1 },
+        relations: ['platform'],
+      });
     });
 
     it('should throw NotFoundException if game not found', async () => {
-      jest.spyOn(gamesRepository, 'findOneBy').mockResolvedValue(null);
+      jest.spyOn(gamesRepository, 'findOne').mockResolvedValue(null);
 
       await expect(service.findOne(999)).rejects.toThrow(NotFoundException);
     });
@@ -197,8 +208,53 @@ describe('GamesService', () => {
 
       const result = await service.search(searchGameDto);
       expect(result).toEqual([mockGame]);
-      expect(queryBuilder.where).toHaveBeenCalled();
-      expect(queryBuilder.andWhere).toHaveBeenCalledTimes(2);
+      expect(queryBuilder.where).toHaveBeenCalledWith(
+        'LOWER(game.name) LIKE LOWER(:name)',
+        { name: '%Test%' },
+      );
+      expect(queryBuilder.andWhere).toHaveBeenCalledWith(
+        'game.completed = :completed',
+        { completed: false },
+      );
+      expect(queryBuilder.andWhere).toHaveBeenCalledWith(
+        'platform.id = :platformId',
+        { platformId: 1 },
+      );
+    });
+  });
+
+  describe('pick', () => {
+    it('should return a random game', async () => {
+      const queryBuilder = {
+        leftJoinAndSelect: jest.fn().mockReturnThis(),
+        orderBy: jest.fn().mockReturnThis(),
+        limit: jest.fn().mockReturnThis(),
+        getOne: jest.fn().mockResolvedValue(mockGame),
+      };
+
+      jest
+        .spyOn(gamesRepository, 'createQueryBuilder')
+        .mockReturnValue(queryBuilder as unknown as SelectQueryBuilder<Game>);
+
+      const result = await service.pick();
+      expect(result).toEqual(mockGame);
+      expect(queryBuilder.orderBy).toHaveBeenCalledWith('RANDOM()');
+      expect(queryBuilder.limit).toHaveBeenCalledWith(1);
+    });
+
+    it('should throw NotFoundException if no games found', async () => {
+      const queryBuilder = {
+        leftJoinAndSelect: jest.fn().mockReturnThis(),
+        orderBy: jest.fn().mockReturnThis(),
+        limit: jest.fn().mockReturnThis(),
+        getOne: jest.fn().mockResolvedValue(null),
+      };
+
+      jest
+        .spyOn(gamesRepository, 'createQueryBuilder')
+        .mockReturnValue(queryBuilder as unknown as SelectQueryBuilder<Game>);
+
+      await expect(service.pick()).rejects.toThrow(NotFoundException);
     });
   });
 });
