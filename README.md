@@ -8,6 +8,7 @@ A NestJS application to manage and search through your game collection.
 - Search games by name, completion status, and platform
 - Platform management
 - User authentication and authorization
+- All game responses include platform information
 
 ## Prerequisites
 
@@ -42,7 +43,6 @@ DB_NAME=your_database_name
 
 # JWT Configuration
 JWT_SECRET=your_jwt_secret
-
 
 # Server Configuration
 PORT=3000
@@ -164,6 +164,21 @@ Body:
 }
 ```
 
+Response:
+
+```json
+{
+  "id": 1,
+  "name": "Game Name",
+  "completed": false,
+  "isActive": true,
+  "platform": {
+    "id": 1,
+    "name": "Platform Name"
+  }
+}
+```
+
 #### Get All Games
 
 ```http
@@ -176,6 +191,23 @@ Headers:
 Authorization: Bearer your_jwt_token
 ```
 
+Response:
+
+```json
+[
+  {
+    "id": 1,
+    "name": "Game Name",
+    "completed": false,
+    "isActive": true,
+    "platform": {
+      "id": 1,
+      "name": "Platform Name"
+    }
+  }
+]
+```
+
 #### Get Game by ID
 
 ```http
@@ -186,6 +218,21 @@ Headers:
 
 ```http
 Authorization: Bearer your_jwt_token
+```
+
+Response:
+
+```json
+{
+  "id": 1,
+  "name": "Game Name",
+  "completed": false,
+  "isActive": true,
+  "platform": {
+    "id": 1,
+    "name": "Platform Name"
+  }
+}
 ```
 
 #### Update Game
@@ -207,6 +254,21 @@ Body:
   "name": "Updated Name",
   "platformId": 2,
   "completed": true
+}
+```
+
+Response:
+
+```json
+{
+  "id": 1,
+  "name": "Updated Name",
+  "completed": true,
+  "isActive": true,
+  "platform": {
+    "id": 2,
+    "name": "New Platform Name"
+  }
 }
 ```
 
@@ -248,6 +310,23 @@ Example:
 GET /games/search?name=mario&completed=true&platformId=1
 ```
 
+Response:
+
+```json
+[
+  {
+    "id": 1,
+    "name": "Super Mario Bros",
+    "completed": true,
+    "isActive": true,
+    "platform": {
+      "id": 1,
+      "name": "Nintendo Switch"
+    }
+  }
+]
+```
+
 #### Pick Random Game
 
 ```http
@@ -260,7 +339,20 @@ Headers:
 Authorization: Bearer your_jwt_token
 ```
 
-Returns a random game from your collection.
+Response:
+
+```json
+{
+  "id": 1,
+  "name": "Random Game",
+  "completed": false,
+  "isActive": true,
+  "platform": {
+    "id": 1,
+    "name": "Platform Name"
+  }
+}
+```
 
 ### Platforms
 

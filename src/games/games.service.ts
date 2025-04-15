@@ -49,7 +49,10 @@ export class GamesService {
   }
 
   async findOne(id: number) {
-    const game = await this.gamesRepository.findOneBy({ id });
+    const game = await this.gamesRepository.findOne({
+      where: { id },
+      relations: ['platform'],
+    });
 
     if (!game) {
       throw new NotFoundException('Game not found');
@@ -113,6 +116,7 @@ export class GamesService {
   async pick() {
     const game = await this.gamesRepository
       .createQueryBuilder('game')
+      .leftJoinAndSelect('game.platform', 'platform')
       .orderBy('RANDOM()')
       .limit(1)
       .getOne();
