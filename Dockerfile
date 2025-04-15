@@ -35,9 +35,6 @@ RUN yarn install --production
 # Copy built application from builder stage
 COPY --from=builder /app/dist ./dist
 
-# Copy games.json
-COPY games.json ./
-
 # Expose the port the app runs on
 EXPOSE 3000
 
