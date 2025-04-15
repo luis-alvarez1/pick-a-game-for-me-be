@@ -15,7 +15,7 @@ export class UsersController {
   }
 
   @Get(':id')
-  @Auth(RoleEnum.Admin)
+  @Auth()
   findOne(@Param('id') id: string) {
     return this.usersService.findOneById(id);
   }

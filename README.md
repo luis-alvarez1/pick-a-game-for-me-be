@@ -105,6 +105,20 @@ Body:
 }
 ```
 
+Response:
+
+```json
+{
+  "id": "uuid",
+  "name": "User Name",
+  "email": "user@example.com",
+  "isActive": true,
+  "role": "user",
+  "createdAt": "2024-01-01T00:00:00.000Z",
+  "updatedAt": 1704067200000
+}
+```
+
 #### Get User by ID
 
 ```http
@@ -117,7 +131,19 @@ Headers:
 Authorization: Bearer your_jwt_token
 ```
 
-Note: Requires Admin role
+Response:
+
+```json
+{
+  "id": "uuid",
+  "name": "User Name",
+  "email": "user@example.com",
+  "isActive": true,
+  "role": "user",
+  "createdAt": "2024-01-01T00:00:00.000Z",
+  "updatedAt": 1704067200000
+}
+```
 
 #### Update User
 
@@ -137,6 +163,20 @@ Body:
 {
   "name": "Updated Name",
   "email": "updated@example.com"
+}
+```
+
+Response:
+
+```json
+{
+  "id": "uuid",
+  "name": "Updated Name",
+  "email": "updated@example.com",
+  "isActive": true,
+  "role": "user",
+  "createdAt": "2024-01-01T00:00:00.000Z",
+  "updatedAt": 1704067200000
 }
 ```
 
@@ -301,8 +341,13 @@ Authorization: Bearer your_jwt_token
 Query Parameters:
 
 - `name` (optional): Search games by name (case-insensitive, partial match)
-- `completed` (optional): Filter by completion status (true/false)
+  - Example: `name=mario` will match "Super Mario Bros", "Mario Kart", etc.
+- `completed` (optional): Filter by completion status
+  - Accepts: `true` or `false` (as strings)
+  - Example: `completed=true`
 - `platformId` (optional): Filter by platform ID
+  - Must be a valid number
+  - Example: `platformId=1`
 
 Example:
 
@@ -356,6 +401,29 @@ Response:
 
 ### Platforms
 
+#### Get All Platforms
+
+```http
+GET /platforms
+```
+
+Headers:
+
+```http
+Authorization: Bearer your_jwt_token
+```
+
+Response:
+
+```json
+[
+  {
+    "id": 1,
+    "name": "Platform Name"
+  }
+]
+```
+
 #### Create Platform
 
 ```http
@@ -376,6 +444,15 @@ Body:
 }
 ```
 
+Response:
+
+```json
+{
+  "id": 1,
+  "name": "Platform Name"
+}
+```
+
 Note: Requires Admin role
 
 #### Get Platform by ID
@@ -388,6 +465,15 @@ Headers:
 
 ```http
 Authorization: Bearer your_jwt_token
+```
+
+Response:
+
+```json
+{
+  "id": 1,
+  "name": "Platform Name"
+}
 ```
 
 #### Update Platform
@@ -410,7 +496,62 @@ Body:
 }
 ```
 
+Response:
+
+```json
+{
+  "id": 1,
+  "name": "Updated Platform Name"
+}
+```
+
 Note: Requires Admin role
+
+#### Search Games
+
+```http
+GET /games/search
+```
+
+Headers:
+
+```http
+Authorization: Bearer your_jwt_token
+```
+
+Query Parameters:
+
+- `name` (optional): Search games by name (case-insensitive, partial match)
+  - Example: `name=mario` will match "Super Mario Bros", "Mario Kart", etc.
+- `completed` (optional): Filter by completion status
+  - Accepts: `true` or `false` (as strings)
+  - Example: `completed=true`
+- `platformId` (optional): Filter by platform ID
+  - Must be a valid number
+  - Example: `platformId=1`
+
+Example:
+
+```http
+GET /games/search?name=mario&completed=true&platformId=1
+```
+
+Response:
+
+```json
+[
+  {
+    "id": 1,
+    "name": "Super Mario Bros",
+    "completed": true,
+    "isActive": true,
+    "platform": {
+      "id": 1,
+      "name": "Nintendo Switch"
+    }
+  }
+]
+```
 
 ## Authentication
 
@@ -426,7 +567,6 @@ Some endpoints require specific roles:
   - DELETE /games/:id
   - POST /platforms
   - PATCH /platforms/:id
-  - GET /users/:id
 
 ## Development
 
