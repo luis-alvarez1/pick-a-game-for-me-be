@@ -20,6 +20,10 @@ RUN yarn build
 # Production stage
 FROM node:22.14-alpine
 
+# Allow port to be configured at build time
+ARG PORT=3000
+ENV PORT=$PORT
+
 WORKDIR /app
 
 # Copy package files first for better caching
@@ -39,7 +43,7 @@ RUN rm -rf /app/node_modules/.cache && \
     find /app/node_modules -type d -name "test" -o -name "tests" -o -name "docs" -o -name "examples" | xargs rm -rf
 
 # Expose the port the app runs on
-EXPOSE 3000
+EXPOSE ${PORT}
 
 # Start the application
 CMD ["node", "dist/main"] 

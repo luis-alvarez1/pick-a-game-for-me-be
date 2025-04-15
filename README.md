@@ -16,6 +16,7 @@ A NestJS application to manage and search through your game collection.
 - Node.js (v16 or higher)
 - npm or yarn
 - PostgreSQL database
+- Docker (optional, for containerized deployment)
 
 ## Installation
 
@@ -59,6 +60,65 @@ npm run migration:run
 
 ```bash
 npm run start:dev
+```
+
+## Docker Deployment
+
+### Building the Docker Image
+
+The application can be built and run using Docker. The Dockerfile is optimized for production use with multi-stage builds and minimal image size.
+
+#### Basic Build
+
+```bash
+docker build -t pick-a-game-for-me .
+```
+
+#### Custom Port Configuration
+
+The application port can be configured during the build process:
+
+```bash
+# Using default port (3000)
+docker build -t pick-a-game-for-me .
+
+# Using custom port
+docker build --build-arg PORT=8080 -t pick-a-game-for-me .
+```
+
+#### Running the Container
+
+```bash
+# Using default port
+docker run -p 3000:3000 pick-a-game-for-me
+
+# Using custom port
+docker run -p 8080:8080 pick-a-game-for-me
+```
+
+### Docker Image Optimization
+
+The Dockerfile includes several optimizations:
+
+- Multi-stage build to separate build and runtime environments
+- Alpine-based Node.js image for smaller size
+- Optimized layer caching
+- Removal of unnecessary files (tests, docs, examples)
+- Cleanup of package manager caches
+
+### Environment Variables
+
+When running the container, you can pass environment variables:
+
+```bash
+docker run -p 3000:3000 \
+  -e DB_HOST=your_db_host \
+  -e DB_PORT=5432 \
+  -e DB_USER=your_db_user \
+  -e DB_PW=your_db_password \
+  -e DB_NAME=your_db_name \
+  -e JWT_SECRET=your_jwt_secret \
+  pick-a-game-for-me
 ```
 
 ## API Documentation
@@ -577,37 +637,6 @@ Some endpoints require specific roles:
 ## Development
 
 - Run tests: `npm run test`
-
-## Docker Deployment
-
-The application can be deployed using Docker. A Dockerfile is provided for building the container.
-
-### Building the Docker Image
-
-```bash
-docker build -t pick-a-game-for-me-back .
-```
-
-### Running the Container
-
-```bash
-docker run -p 3000:3000 pick-a-game-for-me-back
-```
-
-### Environment Variables
-
-When running the container, you need to provide the following environment variables:
-
-```bash
-docker run -p 3000:3000 \
-  -e DB_HOST=your_db_host \
-  -e DB_PORT=your_db_port \
-  -e DB_USER=your_db_user \
-  -e DB_PW=your_db_password \
-  -e DB_NAME=your_db_name \
-  -e JWT_SECRET=your_jwt_secret \
-  pick-a-game-for-me-back
-```
 
 ## CI/CD with Jenkins
 
