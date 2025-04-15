@@ -20,7 +20,7 @@ export class Migrations1744689117734 implements MigrationInterface {
                 "isActive" boolean NOT NULL DEFAULT true,
                 "role" text NOT NULL DEFAULT 'user',
                 "createdAt" TIMESTAMP NOT NULL DEFAULT now(),
-                "updatedAt" bigint NOT NULL
+                "updatedAt" TIMESTAMP NOT NULL DEFAULT now()
             )
         `);
 

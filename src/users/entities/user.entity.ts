@@ -27,7 +27,7 @@ export class User {
   createdAt: string;
 
   @UpdateDateColumn()
-  updatedAt: number;
+  updatedAt: string;
 
   @Column('text', { nullable: false, default: 'user' })
   role: string;
