@@ -22,8 +22,8 @@ A NestJS application to manage and search through your game collection.
 1. Clone the repository:
 
 ```bash
-git clone https://github.com/yourusername/pick-a-game-for-me.git
-cd pick-a-game-for-me
+git clone https://github.com/yourusername/pick-a-game-for-me-be.git
+cd pick-a-game-for-me-be
 ```
 
 2. Install dependencies:
@@ -561,7 +561,7 @@ Note: Requires Admin role
 
 ## Authentication
 
-All endpoints except `/auth/login` and `/users/signup`cr require authentication. Include the JWT token in the Authorization header:
+All endpoints except `/auth/login` and `/users/signup` require authentication. Include the JWT token in the Authorization header:
 
 ```http
 Authorization: Bearer your_jwt_token
