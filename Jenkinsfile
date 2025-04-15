@@ -13,6 +13,12 @@ pipeline {
     }
 
     stages {
+        stage('Cleanup Docker') {
+            steps {
+                sh 'docker system prune -a -f --volumes'
+            }
+        }
+
         stage('Environment Setup') {
             steps {
                 sh '''
