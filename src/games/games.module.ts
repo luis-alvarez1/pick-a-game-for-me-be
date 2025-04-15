@@ -4,9 +4,10 @@ import { GamesController } from './games.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Game } from './entities/game.entity';
 import { PlatformsModule } from 'src/platforms/platforms.module';
+import { Platform } from 'src/platforms/entities/platform.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Game]), PlatformsModule],
+  imports: [TypeOrmModule.forFeature([Game, Platform]), PlatformsModule],
   controllers: [GamesController],
   providers: [GamesService],
 })

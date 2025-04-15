@@ -6,9 +6,10 @@ A NestJS application to manage and search through your game collection.
 
 - Create, read, update, and delete games
 - Search games by name, completion status, and platform
-- Platform management
+- Platform management with associated games
 - User authentication and authorization
 - All game responses include platform information
+- All platform responses include associated games
 
 ## Prerequisites
 
@@ -445,7 +446,15 @@ Response:
 [
   {
     "id": 1,
-    "name": "Platform Name"
+    "name": "Platform Name",
+    "games": [
+      {
+        "id": 1,
+        "name": "Game Name",
+        "completed": false,
+        "isActive": true
+      }
+    ]
   }
 ]
 ```
@@ -475,7 +484,8 @@ Response:
 ```json
 {
   "id": 1,
-  "name": "Platform Name"
+  "name": "Platform Name",
+  "games": []
 }
 ```
 
@@ -498,7 +508,15 @@ Response:
 ```json
 {
   "id": 1,
-  "name": "Platform Name"
+  "name": "Platform Name",
+  "games": [
+    {
+      "id": 1,
+      "name": "Game Name",
+      "completed": false,
+      "isActive": true
+    }
+  ]
 }
 ```
 
@@ -527,7 +545,15 @@ Response:
 ```json
 {
   "id": 1,
-  "name": "Updated Platform Name"
+  "name": "Updated Platform Name",
+  "games": [
+    {
+      "id": 1,
+      "name": "Game Name",
+      "completed": false,
+      "isActive": true
+    }
+  ]
 }
 ```
 

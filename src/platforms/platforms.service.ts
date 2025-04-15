@@ -31,11 +31,16 @@ export class PlatformsService {
   }
 
   async findAll() {
-    return await this.platformRepository.find();
+    return await this.platformRepository.find({
+      relations: ['games'],
+    });
   }
 
   async findOneByName(name: string) {
-    const platform = await this.platformRepository.findOneBy({ name });
+    const platform = await this.platformRepository.findOne({
+      where: { name },
+      relations: ['games'],
+    });
 
     if (!platform) {
       throw new NotFoundException('Platform not found');
@@ -45,7 +50,10 @@ export class PlatformsService {
   }
 
   async findOne(id: number) {
-    const platform = await this.platformRepository.findOneBy({ id });
+    const platform = await this.platformRepository.findOne({
+      where: { id },
+      relations: ['games'],
+    });
 
     if (!platform) {
       throw new NotFoundException('Platform not found');

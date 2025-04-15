@@ -3,7 +3,7 @@ import {
   Column,
   Entity,
   JoinColumn,
-  OneToOne,
+  ManyToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 
@@ -21,10 +21,9 @@ export class Game {
   @Column('boolean', { nullable: false, default: true })
   isActive: boolean;
 
-  @OneToOne(() => Platform, (platform) => platform.id, {
+  @ManyToOne(() => Platform, (platform) => platform.id, {
     onDelete: 'SET NULL',
     onUpdate: 'CASCADE',
   })
-  @JoinColumn()
   platform: Platform;
 }

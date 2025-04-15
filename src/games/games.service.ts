@@ -10,6 +10,7 @@ import { Game } from './entities/game.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { PlatformsService } from 'src/platforms/platforms.service';
 import { SearchGameDto } from './dto/search-game.dto';
+import { readFile } from 'fs/promises';
 
 @Injectable()
 export class GamesService {
@@ -18,8 +19,8 @@ export class GamesService {
     private readonly gamesRepository: Repository<Game>,
     private readonly platformService: PlatformsService,
   ) {}
+
   async create(createGameDto: CreateGameDto) {
-    // game exists with the same name and under the same platform
     const exists = await this.gamesRepository.findOneBy({
       name: createGameDto.name.toLowerCase(),
       platform: { id: createGameDto.platformId },
@@ -83,7 +84,6 @@ export class GamesService {
 
   async remove(id: number) {
     const game = await this.findOne(id);
-
     return await this.gamesRepository.save({ ...game, isActive: false });
   }
 
