@@ -4,7 +4,7 @@ FROM node:22.14-alpine AS builder
 WORKDIR /app
 
 # Install yarn
-RUN npm install -g yarn
+RUN npm install -g yarn --force
 
 # Copy package files
 COPY package*.json yarn.lock ./
