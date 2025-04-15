@@ -4,7 +4,6 @@ import { GamesService } from './games.service';
 import { CreateGameDto } from './dto/create-game.dto';
 import { UpdateGameDto } from './dto/update-game.dto';
 import { SearchGameDto } from './dto/search-game.dto';
-import { RoleEnum } from '../auth/enums/roles.enum';
 
 describe('GamesController', () => {
   let controller: GamesController;
@@ -15,7 +14,7 @@ describe('GamesController', () => {
     name: 'Test Game',
     completed: false,
     isActive: true,
-    platform: { id: 1, name: 'Test Platform' },
+    platform: { id: 1, name: 'Test Platform', games: [] },
   };
 
   beforeEach(async () => {

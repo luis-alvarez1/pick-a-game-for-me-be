@@ -10,7 +10,6 @@ import { Game } from './entities/game.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { PlatformsService } from 'src/platforms/platforms.service';
 import { SearchGameDto } from './dto/search-game.dto';
-import { readFile } from 'fs/promises';
 
 @Injectable()
 export class GamesService {

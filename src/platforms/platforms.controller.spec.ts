@@ -3,7 +3,6 @@ import { PlatformsController } from './platforms.controller';
 import { PlatformsService } from './platforms.service';
 import { CreatePlatformDto } from './dto/create-platform.dto';
 import { UpdatePlatformDto } from './dto/update-platform.dto';
-import { RoleEnum } from '../auth/enums/roles.enum';
 
 describe('PlatformsController', () => {
   let controller: PlatformsController;
@@ -12,6 +11,7 @@ describe('PlatformsController', () => {
   const mockPlatform = {
     id: 1,
     name: 'Test Platform',
+    games: [],
   };
 
   beforeEach(async () => {

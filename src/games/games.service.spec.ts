@@ -3,7 +3,7 @@ import { GamesService } from './games.service';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { Game } from './entities/game.entity';
 import { PlatformsService } from '../platforms/platforms.service';
-import { Repository } from 'typeorm';
+import { Repository, SelectQueryBuilder } from 'typeorm';
 import { CreateGameDto } from './dto/create-game.dto';
 import { UpdateGameDto } from './dto/update-game.dto';
 import { SearchGameDto } from './dto/search-game.dto';
@@ -19,12 +19,13 @@ describe('GamesService', () => {
     name: 'Test Game',
     completed: false,
     isActive: true,
-    platform: { id: 1, name: 'Test Platform' },
+    platform: { id: 1, name: 'Test Platform', games: [] },
   };
 
   const mockPlatform = {
     id: 1,
     name: 'Test Platform',
+    games: [],
   };
 
   beforeEach(async () => {
@@ -192,7 +193,7 @@ describe('GamesService', () => {
 
       jest
         .spyOn(gamesRepository, 'createQueryBuilder')
-        .mockReturnValue(queryBuilder as any);
+        .mockReturnValue(queryBuilder as unknown as SelectQueryBuilder<Game>);
 
       const result = await service.search(searchGameDto);
       expect(result).toEqual([mockGame]);
