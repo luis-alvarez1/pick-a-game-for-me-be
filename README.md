@@ -585,13 +585,13 @@ The application can be deployed using Docker. A Dockerfile is provided for build
 ### Building the Docker Image
 
 ```bash
-docker build -t pick-a-game-for-me .
+docker build -t pick-a-game-for-me-back .
 ```
 
 ### Running the Container
 
 ```bash
-docker run -p 3000:3000 pick-a-game-for-me
+docker run -p 3000:3000 pick-a-game-for-me-back
 ```
 
 ### Environment Variables
@@ -606,7 +606,7 @@ docker run -p 3000:3000 \
   -e DB_PW=your_db_password \
   -e DB_NAME=your_db_name \
   -e JWT_SECRET=your_jwt_secret \
-  pick-a-game-for-me
+  pick-a-game-for-me-back
 ```
 
 ## CI/CD with Jenkins
