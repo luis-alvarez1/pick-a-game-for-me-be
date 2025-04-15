@@ -4,8 +4,6 @@ import { GamesService } from './games.service';
 import { CreateGameDto } from './dto/create-game.dto';
 import { UpdateGameDto } from './dto/update-game.dto';
 import { SearchGameDto } from './dto/search-game.dto';
-import { Auth } from 'src/auth/decorators/auth.decorator';
-import { RoleEnum } from 'src/auth/enums/roles.enum';
 import { BadRequestException } from '@nestjs/common';
 
 jest.mock('src/auth/decorators/auth.decorator', () => ({
