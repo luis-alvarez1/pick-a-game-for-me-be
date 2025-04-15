@@ -119,6 +119,32 @@ Response:
 }
 ```
 
+#### Get Current User
+
+```http
+GET /users/me
+```
+
+Headers:
+
+```http
+Authorization: Bearer your_jwt_token
+```
+
+Response:
+
+```json
+{
+  "id": "uuid",
+  "name": "User Name",
+  "email": "user@example.com",
+  "isActive": true,
+  "role": "user",
+  "createdAt": "2024-01-01T00:00:00.000Z",
+  "updatedAt": 1704067200000
+}
+```
+
 #### Get User by ID
 
 ```http
