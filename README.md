@@ -561,7 +561,7 @@ Note: Requires Admin role
 
 ## Authentication
 
-All endpoints except `/auth/login` and `/users/signup` require authentication. Include the JWT token in the Authorization header:
+All endpoints except `/auth/login` and `/users/signup`cr require authentication. Include the JWT token in the Authorization header:
 
 ```http
 Authorization: Bearer your_jwt_token
@@ -577,3 +577,76 @@ Some endpoints require specific roles:
 ## Development
 
 - Run tests: `npm run test`
+
+## Docker Deployment
+
+The application can be deployed using Docker. A Dockerfile is provided for building the container.
+
+### Building the Docker Image
+
+```bash
+docker build -t pick-a-game-for-me .
+```
+
+### Running the Container
+
+```bash
+docker run -p 3000:3000 pick-a-game-for-me
+```
+
+### Environment Variables
+
+When running the container, you need to provide the following environment variables:
+
+```bash
+docker run -p 3000:3000 \
+  -e DB_HOST=your_db_host \
+  -e DB_PORT=your_db_port \
+  -e DB_USER=your_db_user \
+  -e DB_PW=your_db_password \
+  -e DB_NAME=your_db_name \
+  -e JWT_SECRET=your_jwt_secret \
+  pick-a-game-for-me
+```
+
+## CI/CD with Jenkins
+
+The project includes a Jenkinsfile for continuous integration and deployment. The pipeline:
+
+1. Sets up the environment with Node.js and Docker
+2. Checks out the source code
+3. Installs dependencies
+4. Builds the TypeScript code
+5. Builds and tags the Docker image
+6. Pushes the image to Docker Hub
+
+### Jenkins Pipeline Stages
+
+- Environment Setup
+- Checkout
+- Install Dependencies
+- Build TypeScript
+- Build Docker Image
+- Login to DockerHub
+- Push Docker Image
+
+### Required Jenkins Credentials
+
+- `dockerhub-credentials`: Docker Hub username and password
+
+### Docker Image
+
+The pipeline builds and pushes the image to:
+
+- `luisalvarez1106/pick-a-game-for-me-back:${BUILD_NUMBER}`
+- `luisalvarez1106/pick-a-game-for-me-back:latest`
+
+To pull the latest image:
+
+```bash
+docker pull luisalvarez1106/pick-a-game-for-me-back:latest
+```
+
+## License
+
+This project is licensed under the Apache License 2.0 - see the [LICENSE](LICENSE) file for details.
