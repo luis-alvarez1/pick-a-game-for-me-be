@@ -85,9 +85,16 @@ describe('GamesController', () => {
     });
 
     it('should throw BadRequestException for invalid id', async () => {
-      await expect(controller.findOne('invalid')).rejects.toThrow(
-        new BadRequestException('Invalid game ID'),
-      );
+      try {
+        await controller.findOne('invalid');
+        fail('Expected BadRequestException to be thrown');
+      } catch (error: unknown) {
+        if (error instanceof BadRequestException) {
+          expect(error.message).toBe('Invalid game ID');
+        } else {
+          fail('Expected BadRequestException to be thrown');
+        }
+      }
     });
   });
 
@@ -109,9 +116,16 @@ describe('GamesController', () => {
     });
 
     it('should throw BadRequestException for invalid id', async () => {
-      await expect(controller.update('invalid', {})).rejects.toThrow(
-        new BadRequestException('Invalid game ID'),
-      );
+      try {
+        await controller.update('invalid', {});
+        fail('Expected BadRequestException to be thrown');
+      } catch (error: unknown) {
+        if (error instanceof BadRequestException) {
+          expect(error.message).toBe('Invalid game ID');
+        } else {
+          fail('Expected BadRequestException to be thrown');
+        }
+      }
     });
   });
 
@@ -128,9 +142,16 @@ describe('GamesController', () => {
     });
 
     it('should throw BadRequestException for invalid id', async () => {
-      await expect(controller.remove('invalid')).rejects.toThrow(
-        new BadRequestException('Invalid game ID'),
-      );
+      try {
+        await controller.remove('invalid');
+        fail('Expected BadRequestException to be thrown');
+      } catch (error: unknown) {
+        if (error instanceof BadRequestException) {
+          expect(error.message).toBe('Invalid game ID');
+        } else {
+          fail('Expected BadRequestException to be thrown');
+        }
+      }
     });
   });
 
