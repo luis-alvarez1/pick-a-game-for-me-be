@@ -20,6 +20,10 @@ import { SearchGameDto } from './dto/search-game.dto';
 export class GamesController {
   constructor(private readonly gamesService: GamesService) {}
 
+  @Post('import')
+  async importGames() {
+    return this.gamesService.importGames();
+  }
   @Post()
   @Auth()
   create(@Body() createGameDto: CreateGameDto) {

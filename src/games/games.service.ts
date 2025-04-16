@@ -10,6 +10,14 @@ import { Game } from './entities/game.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { PlatformsService } from 'src/platforms/platforms.service';
 import { SearchGameDto } from './dto/search-game.dto';
+import * as fs from 'fs';
+import * as path from 'path';
+
+interface GameImportData {
+  Game: string;
+  Platform: string;
+  Completed: boolean;
+}
 
 @Injectable()
 export class GamesService {
@@ -125,5 +133,65 @@ export class GamesService {
     }
 
     return game;
+  }
+
+  async importGames() {
+    const filePath = path.join(process.cwd(), 'games.json');
+    const gamesData = JSON.parse(
+      fs.readFileSync(filePath, 'utf8'),
+    ) as GameImportData[];
+
+    const platformMap = new Map<string, number>();
+    const results = {
+      imported: 0,
+      skipped: 0,
+      errors: 0,
+    };
+
+    for (const gameData of gamesData) {
+      try {
+        let platformId = platformMap.get(gameData.Platform);
+
+        if (!platformId) {
+          try {
+            const platform = await this.platformService.findOneByName(
+              gameData.Platform,
+            );
+            platformId = platform.id;
+          } catch (error) {
+            if (error instanceof NotFoundException) {
+              const newPlatform = await this.platformService.create({
+                name: gameData.Platform,
+              });
+              platformId = newPlatform.id;
+            } else {
+              throw error;
+            }
+          }
+          platformMap.set(gameData.Platform, platformId);
+        }
+
+        const createGameDto: CreateGameDto = {
+          name: gameData.Game,
+          platformId,
+          completed: gameData.Completed,
+        };
+
+        try {
+          await this.create(createGameDto);
+          results.imported++;
+        } catch (error) {
+          if (error instanceof BadRequestException) {
+            results.skipped++;
+          } else {
+            results.errors++;
+          }
+        }
+      } catch (error) {
+        results.errors++;
+      }
+    }
+
+    return results;
   }
 }
