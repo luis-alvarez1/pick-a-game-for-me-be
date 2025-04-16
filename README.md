@@ -71,7 +71,7 @@ The application can be built and run using Docker. The Dockerfile is optimized f
 #### Basic Build
 
 ```bash
-docker build -t pick-a-game-for-me .
+docker build -t pick-a-game-for-me-back .
 ```
 
 #### Custom Port Configuration
@@ -80,20 +80,20 @@ The application port can be configured during the build process:
 
 ```bash
 # Using default port (3000)
-docker build -t pick-a-game-for-me .
+docker build -t pick-a-game-for-me-back .
 
 # Using custom port
-docker build --build-arg PORT=8080 -t pick-a-game-for-me .
+docker build --build-arg PORT=8080 -t pick-a-game-for-me-back .
 ```
 
 #### Running the Container
 
 ```bash
 # Using default port
-docker run -p 3000:3000 pick-a-game-for-me
+docker run -p 3000:3000 pick-a-game-for-me-back
 
 # Using custom port
-docker run -p 8080:8080 pick-a-game-for-me
+docker run -p 8080:8080 pick-a-game-for-me-back
 ```
 
 ### Docker Image Optimization
@@ -118,7 +118,7 @@ docker run -p 3000:3000 \
   -e DB_PW=your_db_password \
   -e DB_NAME=your_db_name \
   -e JWT_SECRET=your_jwt_secret \
-  pick-a-game-for-me
+  pick-a-game-for-me-back
 ```
 
 ## API Documentation
