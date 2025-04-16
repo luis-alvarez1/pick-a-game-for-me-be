@@ -20,7 +20,7 @@ describe('AuthService', () => {
     isActive: true,
     role: 'user',
     createdAt: '2024-01-01T00:00:00.000Z',
-    updatedAt: 1704067200000,
+    updatedAt: '2024-01-01T00:00:00.000Z',
   };
 
   const mockToken = 'mock.jwt.token';

@@ -89,6 +89,10 @@ describe('GamesService', () => {
         platform: mockPlatform,
         completed: false,
       });
+      expect(gamesRepository.findOneBy).toHaveBeenCalledWith({
+        name: createGameDto.name.toLowerCase(),
+        platform: { id: createGameDto.platformId },
+      });
     });
 
     it('should throw BadRequestException if game already exists', async () => {
@@ -219,6 +223,56 @@ describe('GamesService', () => {
       expect(queryBuilder.andWhere).toHaveBeenCalledWith(
         'platform.id = :platformId',
         { platformId: 1 },
+      );
+    });
+
+    it('should search games with only name filter', async () => {
+      const searchGameDto: SearchGameDto = {
+        name: 'Test',
+      };
+
+      const queryBuilder = {
+        leftJoinAndSelect: jest.fn().mockReturnThis(),
+        where: jest.fn().mockReturnThis(),
+        andWhere: jest.fn().mockReturnThis(),
+        getMany: jest.fn().mockResolvedValue([mockGame]),
+      };
+
+      jest
+        .spyOn(gamesRepository, 'createQueryBuilder')
+        .mockReturnValue(queryBuilder as unknown as SelectQueryBuilder<Game>);
+
+      const result = await service.search(searchGameDto);
+      expect(result).toEqual([mockGame]);
+      expect(queryBuilder.where).toHaveBeenCalledWith(
+        'LOWER(game.name) LIKE LOWER(:name)',
+        { name: '%Test%' },
+      );
+      expect(queryBuilder.andWhere).not.toHaveBeenCalled();
+    });
+
+    it('should search games with only completed filter', async () => {
+      const searchGameDto: SearchGameDto = {
+        completed: true,
+      };
+
+      const queryBuilder = {
+        leftJoinAndSelect: jest.fn().mockReturnThis(),
+        where: jest.fn().mockReturnThis(),
+        andWhere: jest.fn().mockReturnThis(),
+        getMany: jest.fn().mockResolvedValue([mockGame]),
+      };
+
+      jest
+        .spyOn(gamesRepository, 'createQueryBuilder')
+        .mockReturnValue(queryBuilder as unknown as SelectQueryBuilder<Game>);
+
+      const result = await service.search(searchGameDto);
+      expect(result).toEqual([mockGame]);
+      expect(queryBuilder.where).not.toHaveBeenCalled();
+      expect(queryBuilder.andWhere).toHaveBeenCalledWith(
+        'game.completed = :completed',
+        { completed: true },
       );
     });
   });
