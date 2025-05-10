@@ -8,6 +8,10 @@ export class SearchGameDto {
 
   @IsBoolean()
   @IsOptional()
+  @Transform(({ value }) => {
+    if (value === undefined || value === null) return undefined;
+    return value === 'true';
+  })
   completed?: boolean;
 
   @IsNumber()

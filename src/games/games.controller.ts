@@ -45,7 +45,9 @@ export class GamesController {
   @Get('search')
   @Auth()
   search(
-    @Query() searchGameDto: SearchGameDto,
+    @Query('name') name?: string,
+    @Query('completed') completed?: string,
+    @Query('platformId') platformId?: string,
     @Query('page') page?: string,
     @Query('limit') limit?: string,
   ) {
@@ -58,6 +60,12 @@ export class GamesController {
     if (isNaN(parsedLimit) || parsedLimit < 1) {
       throw new BadRequestException('Invalid limit number');
     }
+
+    const searchGameDto: SearchGameDto = {
+      name,
+      ...(completed !== undefined && { completed: completed === 'true' }),
+      platformId: platformId ? parseInt(platformId, 10) : undefined,
+    };
 
     return this.gamesService.search(searchGameDto, parsedPage, parsedLimit);
   }
