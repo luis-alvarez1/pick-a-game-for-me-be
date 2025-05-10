@@ -3,7 +3,6 @@ import { GamesController } from './games.controller';
 import { GamesService } from './games.service';
 import { CreateGameDto } from './dto/create-game.dto';
 import { UpdateGameDto } from './dto/update-game.dto';
-import { SearchGameDto } from './dto/search-game.dto';
 import { BadRequestException } from '@nestjs/common';
 
 jest.mock('src/auth/decorators/auth.decorator', () => ({
