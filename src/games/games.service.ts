@@ -21,7 +21,7 @@ export class GamesService {
 
   async create(createGameDto: CreateGameDto) {
     const exists = await this.gamesRepository.findOneBy({
-      name: createGameDto.name.toLowerCase(),
+      name: createGameDto.name,
       platform: { id: createGameDto.platformId },
     });
 
@@ -42,15 +42,35 @@ export class GamesService {
     return await this.gamesRepository.save(game);
   }
 
-  async findAll() {
-    return await this.gamesRepository.find({
+  async findAll(page = 1, limit = 10) {
+    const skip = (page - 1) * limit;
+
+    const [games, total] = await this.gamesRepository.findAndCount({
       relations: ['platform'],
+      where: {
+        isActive: true,
+      },
+      skip,
+      take: limit,
     });
+
+    return {
+      data: games,
+      meta: {
+        total,
+        page,
+        limit,
+        totalPages: Math.ceil(total / limit),
+      },
+    };
   }
 
   async findOne(id: number) {
     const game = await this.gamesRepository.findOne({
-      where: { id },
+      where: {
+        id,
+        isActive: true,
+      },
       relations: ['platform'],
     });
 
@@ -115,6 +135,8 @@ export class GamesService {
   async pick() {
     const game = await this.gamesRepository
       .createQueryBuilder('game')
+      .where('game.completed = :completed', { completed: false })
+      .andWhere('game.isActive = :isActive', { isActive: true })
       .leftJoinAndSelect('game.platform', 'platform')
       .orderBy('RANDOM()')
       .limit(1)

@@ -66,12 +66,108 @@ describe('GamesController', () => {
   });
 
   describe('findAll', () => {
-    it('should return all games', async () => {
-      jest.spyOn(service, 'findAll').mockResolvedValue([mockGame]);
+    it('should return paginated games with default values', async () => {
+      const mockResponse = {
+        data: [mockGame],
+        meta: {
+          total: 1,
+          page: 1,
+          limit: 10,
+          totalPages: 1,
+        },
+      };
+      jest.spyOn(service, 'findAll').mockResolvedValue(mockResponse);
 
       const result = await controller.findAll();
-      expect(result).toEqual([mockGame]);
-      expect(service.findAll).toHaveBeenCalled();
+      expect(result).toEqual(mockResponse);
+      expect(service.findAll).toHaveBeenCalledWith(1, 10);
+    });
+
+    it('should return paginated games with custom page and limit', async () => {
+      const mockResponse = {
+        data: [mockGame],
+        meta: {
+          total: 15,
+          page: 2,
+          limit: 5,
+          totalPages: 3,
+        },
+      };
+      jest.spyOn(service, 'findAll').mockResolvedValue(mockResponse);
+
+      const result = await controller.findAll('2', '5');
+      expect(result).toEqual(mockResponse);
+      expect(service.findAll).toHaveBeenCalledWith(2, 5);
+    });
+
+    it('should throw BadRequestException for invalid page', async () => {
+      try {
+        await controller.findAll('0');
+        fail('Expected BadRequestException to be thrown');
+      } catch (error: unknown) {
+        if (error instanceof BadRequestException) {
+          expect(error.message).toBe('Invalid page number');
+        } else {
+          fail('Expected BadRequestException to be thrown');
+        }
+      }
+
+      try {
+        await controller.findAll('-1');
+        fail('Expected BadRequestException to be thrown');
+      } catch (error: unknown) {
+        if (error instanceof BadRequestException) {
+          expect(error.message).toBe('Invalid page number');
+        } else {
+          fail('Expected BadRequestException to be thrown');
+        }
+      }
+
+      try {
+        await controller.findAll('invalid');
+        fail('Expected BadRequestException to be thrown');
+      } catch (error: unknown) {
+        if (error instanceof BadRequestException) {
+          expect(error.message).toBe('Invalid page number');
+        } else {
+          fail('Expected BadRequestException to be thrown');
+        }
+      }
+    });
+
+    it('should throw BadRequestException for invalid limit', async () => {
+      try {
+        await controller.findAll('1', '0');
+        fail('Expected BadRequestException to be thrown');
+      } catch (error: unknown) {
+        if (error instanceof BadRequestException) {
+          expect(error.message).toBe('Invalid limit number');
+        } else {
+          fail('Expected BadRequestException to be thrown');
+        }
+      }
+
+      try {
+        await controller.findAll('1', '-1');
+        fail('Expected BadRequestException to be thrown');
+      } catch (error: unknown) {
+        if (error instanceof BadRequestException) {
+          expect(error.message).toBe('Invalid limit number');
+        } else {
+          fail('Expected BadRequestException to be thrown');
+        }
+      }
+
+      try {
+        await controller.findAll('1', 'invalid');
+        fail('Expected BadRequestException to be thrown');
+      } catch (error: unknown) {
+        if (error instanceof BadRequestException) {
+          expect(error.message).toBe('Invalid limit number');
+        } else {
+          fail('Expected BadRequestException to be thrown');
+        }
+      }
     });
   });
 

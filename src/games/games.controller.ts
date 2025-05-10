@@ -28,8 +28,18 @@ export class GamesController {
 
   @Get()
   @Auth()
-  findAll() {
-    return this.gamesService.findAll();
+  findAll(@Query('page') page?: string, @Query('limit') limit?: string) {
+    const parsedPage = page ? parseInt(page, 10) : 1;
+    const parsedLimit = limit ? parseInt(limit, 10) : 10;
+
+    if (isNaN(parsedPage) || parsedPage < 1) {
+      throw new BadRequestException('Invalid page number');
+    }
+    if (isNaN(parsedLimit) || parsedLimit < 1) {
+      throw new BadRequestException('Invalid limit number');
+    }
+
+    return this.gamesService.findAll(parsedPage, parsedLimit);
   }
 
   @Get('search')

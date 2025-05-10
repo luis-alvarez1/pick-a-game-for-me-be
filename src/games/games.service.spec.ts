@@ -40,6 +40,7 @@ describe('GamesService', () => {
             create: jest.fn(),
             save: jest.fn(),
             find: jest.fn(),
+            findAndCount: jest.fn(),
             createQueryBuilder: () => ({
               leftJoinAndSelect: jest.fn().mockReturnThis(),
               where: jest.fn().mockReturnThis(),
@@ -90,7 +91,7 @@ describe('GamesService', () => {
         completed: false,
       });
       expect(gamesRepository.findOneBy).toHaveBeenCalledWith({
-        name: createGameDto.name.toLowerCase(),
+        name: createGameDto.name,
         platform: { id: createGameDto.platformId },
       });
     });
@@ -111,13 +112,53 @@ describe('GamesService', () => {
   });
 
   describe('findAll', () => {
-    it('should return all games', async () => {
-      jest.spyOn(gamesRepository, 'find').mockResolvedValue([mockGame]);
+    it('should return paginated games with default values', async () => {
+      const mockGames = [mockGame];
+      const mockTotal = 1;
+      jest
+        .spyOn(gamesRepository, 'findAndCount')
+        .mockResolvedValue([mockGames, mockTotal]);
 
       const result = await service.findAll();
-      expect(result).toEqual([mockGame]);
-      expect(gamesRepository.find).toHaveBeenCalledWith({
+      expect(result).toEqual({
+        data: mockGames,
+        meta: {
+          total: mockTotal,
+          page: 1,
+          limit: 10,
+          totalPages: 1,
+        },
+      });
+      expect(gamesRepository.findAndCount).toHaveBeenCalledWith({
         relations: ['platform'],
+        where: { isActive: true },
+        skip: 0,
+        take: 10,
+      });
+    });
+
+    it('should return paginated games with custom page and limit', async () => {
+      const mockGames = [mockGame];
+      const mockTotal = 15;
+      jest
+        .spyOn(gamesRepository, 'findAndCount')
+        .mockResolvedValue([mockGames, mockTotal]);
+
+      const result = await service.findAll(2, 5);
+      expect(result).toEqual({
+        data: mockGames,
+        meta: {
+          total: mockTotal,
+          page: 2,
+          limit: 5,
+          totalPages: 3,
+        },
+      });
+      expect(gamesRepository.findAndCount).toHaveBeenCalledWith({
+        relations: ['platform'],
+        where: { isActive: true },
+        skip: 5,
+        take: 5,
       });
     });
   });
@@ -129,7 +170,10 @@ describe('GamesService', () => {
       const result = await service.findOne(1);
       expect(result).toEqual(mockGame);
       expect(gamesRepository.findOne).toHaveBeenCalledWith({
-        where: { id: 1 },
+        where: {
+          id: 1,
+          isActive: true,
+        },
         relations: ['platform'],
       });
     });
@@ -281,6 +325,8 @@ describe('GamesService', () => {
     it('should return a random game', async () => {
       const queryBuilder = {
         leftJoinAndSelect: jest.fn().mockReturnThis(),
+        where: jest.fn().mockReturnThis(),
+        andWhere: jest.fn().mockReturnThis(),
         orderBy: jest.fn().mockReturnThis(),
         limit: jest.fn().mockReturnThis(),
         getOne: jest.fn().mockResolvedValue(mockGame),
@@ -292,6 +338,14 @@ describe('GamesService', () => {
 
       const result = await service.pick();
       expect(result).toEqual(mockGame);
+      expect(queryBuilder.where).toHaveBeenCalledWith(
+        'game.completed = :completed',
+        { completed: false },
+      );
+      expect(queryBuilder.andWhere).toHaveBeenCalledWith(
+        'game.isActive = :isActive',
+        { isActive: true },
+      );
       expect(queryBuilder.orderBy).toHaveBeenCalledWith('RANDOM()');
       expect(queryBuilder.limit).toHaveBeenCalledWith(1);
     });
@@ -299,6 +353,8 @@ describe('GamesService', () => {
     it('should throw NotFoundException if no games found', async () => {
       const queryBuilder = {
         leftJoinAndSelect: jest.fn().mockReturnThis(),
+        where: jest.fn().mockReturnThis(),
+        andWhere: jest.fn().mockReturnThis(),
         orderBy: jest.fn().mockReturnThis(),
         limit: jest.fn().mockReturnThis(),
         getOne: jest.fn().mockResolvedValue(null),
