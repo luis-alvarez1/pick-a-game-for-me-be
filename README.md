@@ -269,6 +269,123 @@ Response:
 
 ### Games
 
+#### List Games
+
+```http
+GET /games
+```
+
+Headers:
+
+```http
+Authorization: Bearer your_jwt_token
+```
+
+Query Parameters:
+
+- `page` (optional): Page number (default: 1)
+- `limit` (optional): Items per page (default: 10)
+
+Response:
+
+```json
+{
+  "data": [
+    {
+      "id": 1,
+      "name": "Game Name",
+      "completed": false,
+      "isActive": true,
+      "platform": {
+        "id": 1,
+        "name": "Platform Name",
+        "games": []
+      }
+    }
+  ],
+  "meta": {
+    "total": 100,
+    "page": 1,
+    "limit": 10,
+    "totalPages": 10
+  }
+}
+```
+
+#### Search Games
+
+```http
+GET /games/search
+```
+
+Headers:
+
+```http
+Authorization: Bearer your_jwt_token
+```
+
+Query Parameters:
+
+- `name` (optional): Search by game name (case-insensitive)
+- `completed` (optional): Filter by completion status
+- `platformId` (optional): Filter by platform ID
+- `page` (optional): Page number (default: 1)
+- `limit` (optional): Items per page (default: 10)
+
+Response:
+
+```json
+{
+  "data": [
+    {
+      "id": 1,
+      "name": "Game Name",
+      "completed": false,
+      "isActive": true,
+      "platform": {
+        "id": 1,
+        "name": "Platform Name",
+        "games": []
+      }
+    }
+  ],
+  "meta": {
+    "total": 100,
+    "page": 1,
+    "limit": 10,
+    "totalPages": 10
+  }
+}
+```
+
+#### Get Game by ID
+
+```http
+GET /games/:id
+```
+
+Headers:
+
+```http
+Authorization: Bearer your_jwt_token
+```
+
+Response:
+
+```json
+{
+  "id": 1,
+  "name": "Game Name",
+  "completed": false,
+  "isActive": true,
+  "platform": {
+    "id": 1,
+    "name": "Platform Name",
+    "games": []
+  }
+}
+```
+
 #### Create Game
 
 ```http
@@ -301,63 +418,8 @@ Response:
   "isActive": true,
   "platform": {
     "id": 1,
-    "name": "Platform Name"
-  }
-}
-```
-
-#### Get All Games
-
-```http
-GET /games
-```
-
-Headers:
-
-```http
-Authorization: Bearer your_jwt_token
-```
-
-Response:
-
-```json
-[
-  {
-    "id": 1,
-    "name": "Game Name",
-    "completed": false,
-    "isActive": true,
-    "platform": {
-      "id": 1,
-      "name": "Platform Name"
-    }
-  }
-]
-```
-
-#### Get Game by ID
-
-```http
-GET /games/:id
-```
-
-Headers:
-
-```http
-Authorization: Bearer your_jwt_token
-```
-
-Response:
-
-```json
-{
-  "id": 1,
-  "name": "Game Name",
-  "completed": false,
-  "isActive": true,
-  "platform": {
-    "id": 1,
-    "name": "Platform Name"
+    "name": "Platform Name",
+    "games": []
   }
 }
 ```
@@ -378,7 +440,7 @@ Body:
 
 ```json
 {
-  "name": "Updated Name",
+  "name": "Updated Game Name",
   "platformId": 2,
   "completed": true
 }
@@ -389,12 +451,13 @@ Response:
 ```json
 {
   "id": 1,
-  "name": "Updated Name",
+  "name": "Updated Game Name",
   "completed": true,
   "isActive": true,
   "platform": {
     "id": 2,
-    "name": "New Platform Name"
+    "name": "New Platform Name",
+    "games": []
   }
 }
 ```
@@ -411,52 +474,20 @@ Headers:
 Authorization: Bearer your_jwt_token
 ```
 
-Note: Requires Admin role
-
-#### Search Games
-
-```http
-GET /games/search
-```
-
-Headers:
-
-```http
-Authorization: Bearer your_jwt_token
-```
-
-Query Parameters:
-
-- `name` (optional): Search games by name (case-insensitive, partial match)
-  - Example: `name=mario` will match "Super Mario Bros", "Mario Kart", etc.
-- `completed` (optional): Filter by completion status
-  - Accepts: `true` or `false` (as strings)
-  - Example: `completed=true`
-- `platformId` (optional): Filter by platform ID
-  - Must be a valid number
-  - Example: `platformId=1`
-
-Example:
-
-```http
-GET /games/search?name=mario&completed=true&platformId=1
-```
-
 Response:
 
 ```json
-[
-  {
+{
+  "id": 1,
+  "name": "Game Name",
+  "completed": false,
+  "isActive": false,
+  "platform": {
     "id": 1,
-    "name": "Super Mario Bros",
-    "completed": true,
-    "isActive": true,
-    "platform": {
-      "id": 1,
-      "name": "Nintendo Switch"
-    }
+    "name": "Platform Name",
+    "games": []
   }
-]
+}
 ```
 
 #### Pick Random Game
@@ -476,12 +507,13 @@ Response:
 ```json
 {
   "id": 1,
-  "name": "Random Game",
+  "name": "Game Name",
   "completed": false,
   "isActive": true,
   "platform": {
     "id": 1,
-    "name": "Platform Name"
+    "name": "Platform Name",
+    "games": []
   }
 }
 ```
