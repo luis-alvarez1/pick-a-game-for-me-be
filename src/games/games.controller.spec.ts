@@ -252,18 +252,84 @@ describe('GamesController', () => {
   });
 
   describe('search', () => {
-    it('should search games with filters', async () => {
+    it('should search games with filters and pagination', async () => {
       const searchGameDto: SearchGameDto = {
         name: 'Test',
         completed: false,
         platformId: 1,
       };
 
-      jest.spyOn(service, 'search').mockResolvedValue([mockGame]);
+      const mockResponse = {
+        data: [mockGame],
+        meta: {
+          total: 15,
+          page: 2,
+          limit: 5,
+          totalPages: 3,
+        },
+      };
+
+      jest.spyOn(service, 'search').mockResolvedValue(mockResponse);
+
+      const result = await controller.search(searchGameDto, '2', '5');
+      expect(result).toEqual(mockResponse);
+      expect(service.search).toHaveBeenCalledWith(searchGameDto, 2, 5);
+    });
+
+    it('should search games with default pagination', async () => {
+      const searchGameDto: SearchGameDto = {
+        name: 'Test',
+      };
+
+      const mockResponse = {
+        data: [mockGame],
+        meta: {
+          total: 1,
+          page: 1,
+          limit: 10,
+          totalPages: 1,
+        },
+      };
+
+      jest.spyOn(service, 'search').mockResolvedValue(mockResponse);
 
       const result = await controller.search(searchGameDto);
-      expect(result).toEqual([mockGame]);
-      expect(service.search).toHaveBeenCalledWith(searchGameDto);
+      expect(result).toEqual(mockResponse);
+      expect(service.search).toHaveBeenCalledWith(searchGameDto, 1, 10);
+    });
+
+    it('should throw BadRequestException for invalid page', async () => {
+      const searchGameDto: SearchGameDto = {
+        name: 'Test',
+      };
+
+      try {
+        await controller.search(searchGameDto, '0');
+        fail('Expected BadRequestException to be thrown');
+      } catch (error: unknown) {
+        if (error instanceof BadRequestException) {
+          expect(error.message).toBe('Invalid page number');
+        } else {
+          fail('Expected BadRequestException to be thrown');
+        }
+      }
+    });
+
+    it('should throw BadRequestException for invalid limit', async () => {
+      const searchGameDto: SearchGameDto = {
+        name: 'Test',
+      };
+
+      try {
+        await controller.search(searchGameDto, '1', '0');
+        fail('Expected BadRequestException to be thrown');
+      } catch (error: unknown) {
+        if (error instanceof BadRequestException) {
+          expect(error.message).toBe('Invalid limit number');
+        } else {
+          fail('Expected BadRequestException to be thrown');
+        }
+      }
     });
   });
 

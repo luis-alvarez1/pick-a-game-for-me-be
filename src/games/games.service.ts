@@ -106,7 +106,7 @@ export class GamesService {
     return await this.gamesRepository.save({ ...game, isActive: false });
   }
 
-  async search(searchGameDto: SearchGameDto) {
+  async search(searchGameDto: SearchGameDto, page = 1, limit = 10) {
     const queryBuilder = this.gamesRepository
       .createQueryBuilder('game')
       .leftJoinAndSelect('game.platform', 'platform');
@@ -129,7 +129,22 @@ export class GamesService {
       });
     }
 
-    return await queryBuilder.getMany();
+    const skip = (page - 1) * limit;
+    queryBuilder.skip(skip).take(limit);
+
+    const [games, total] = await queryBuilder
+      .orderBy('game.name', 'ASC', 'NULLS LAST')
+      .getManyAndCount();
+
+    return {
+      data: games,
+      meta: {
+        total,
+        page,
+        limit,
+        totalPages: Math.ceil(total / limit),
+      },
+    };
   }
 
   async pick() {

@@ -236,26 +236,40 @@ describe('GamesService', () => {
   });
 
   describe('search', () => {
-    it('should search games with filters', async () => {
+    it('should search games with filters and pagination', async () => {
       const searchGameDto: SearchGameDto = {
         name: 'Test',
         completed: false,
         platformId: 1,
       };
 
+      const mockGames = [mockGame];
+      const mockTotal = 15;
+
       const queryBuilder = {
         leftJoinAndSelect: jest.fn().mockReturnThis(),
         where: jest.fn().mockReturnThis(),
         andWhere: jest.fn().mockReturnThis(),
-        getMany: jest.fn().mockResolvedValue([mockGame]),
+        skip: jest.fn().mockReturnThis(),
+        take: jest.fn().mockReturnThis(),
+        orderBy: jest.fn().mockReturnThis(),
+        getManyAndCount: jest.fn().mockResolvedValue([mockGames, mockTotal]),
       };
 
       jest
         .spyOn(gamesRepository, 'createQueryBuilder')
         .mockReturnValue(queryBuilder as unknown as SelectQueryBuilder<Game>);
 
-      const result = await service.search(searchGameDto);
-      expect(result).toEqual([mockGame]);
+      const result = await service.search(searchGameDto, 2, 5);
+      expect(result).toEqual({
+        data: mockGames,
+        meta: {
+          total: mockTotal,
+          page: 2,
+          limit: 5,
+          totalPages: 3,
+        },
+      });
       expect(queryBuilder.where).toHaveBeenCalledWith(
         'LOWER(game.name) LIKE LOWER(:name)',
         { name: '%Test%' },
@@ -268,18 +282,31 @@ describe('GamesService', () => {
         'platform.id = :platformId',
         { platformId: 1 },
       );
+      expect(queryBuilder.skip).toHaveBeenCalledWith(5);
+      expect(queryBuilder.take).toHaveBeenCalledWith(5);
+      expect(queryBuilder.orderBy).toHaveBeenCalledWith(
+        'game.name',
+        'ASC',
+        'NULLS LAST',
+      );
     });
 
-    it('should search games with only name filter', async () => {
+    it('should search games with only name filter and default pagination', async () => {
       const searchGameDto: SearchGameDto = {
         name: 'Test',
       };
+
+      const mockGames = [mockGame];
+      const mockTotal = 1;
 
       const queryBuilder = {
         leftJoinAndSelect: jest.fn().mockReturnThis(),
         where: jest.fn().mockReturnThis(),
         andWhere: jest.fn().mockReturnThis(),
-        getMany: jest.fn().mockResolvedValue([mockGame]),
+        skip: jest.fn().mockReturnThis(),
+        take: jest.fn().mockReturnThis(),
+        orderBy: jest.fn().mockReturnThis(),
+        getManyAndCount: jest.fn().mockResolvedValue([mockGames, mockTotal]),
       };
 
       jest
@@ -287,12 +314,21 @@ describe('GamesService', () => {
         .mockReturnValue(queryBuilder as unknown as SelectQueryBuilder<Game>);
 
       const result = await service.search(searchGameDto);
-      expect(result).toEqual([mockGame]);
+      expect(result).toEqual({
+        data: mockGames,
+        meta: {
+          total: mockTotal,
+          page: 1,
+          limit: 10,
+          totalPages: 1,
+        },
+      });
       expect(queryBuilder.where).toHaveBeenCalledWith(
         'LOWER(game.name) LIKE LOWER(:name)',
         { name: '%Test%' },
       );
-      expect(queryBuilder.andWhere).not.toHaveBeenCalled();
+      expect(queryBuilder.skip).toHaveBeenCalledWith(0);
+      expect(queryBuilder.take).toHaveBeenCalledWith(10);
     });
 
     it('should search games with only completed filter', async () => {
@@ -300,11 +336,17 @@ describe('GamesService', () => {
         completed: true,
       };
 
+      const mockGames = [mockGame];
+      const mockTotal = 1;
+
       const queryBuilder = {
         leftJoinAndSelect: jest.fn().mockReturnThis(),
         where: jest.fn().mockReturnThis(),
         andWhere: jest.fn().mockReturnThis(),
-        getMany: jest.fn().mockResolvedValue([mockGame]),
+        skip: jest.fn().mockReturnThis(),
+        take: jest.fn().mockReturnThis(),
+        orderBy: jest.fn().mockReturnThis(),
+        getManyAndCount: jest.fn().mockResolvedValue([mockGames, mockTotal]),
       };
 
       jest
@@ -312,7 +354,15 @@ describe('GamesService', () => {
         .mockReturnValue(queryBuilder as unknown as SelectQueryBuilder<Game>);
 
       const result = await service.search(searchGameDto);
-      expect(result).toEqual([mockGame]);
+      expect(result).toEqual({
+        data: mockGames,
+        meta: {
+          total: mockTotal,
+          page: 1,
+          limit: 10,
+          totalPages: 1,
+        },
+      });
       expect(queryBuilder.where).not.toHaveBeenCalled();
       expect(queryBuilder.andWhere).toHaveBeenCalledWith(
         'game.completed = :completed',
