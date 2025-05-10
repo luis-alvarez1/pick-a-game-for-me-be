@@ -253,12 +253,6 @@ describe('GamesController', () => {
 
   describe('search', () => {
     it('should search games with filters and pagination', async () => {
-      const searchGameDto: SearchGameDto = {
-        name: 'Test',
-        completed: false,
-        platformId: 1,
-      };
-
       const mockResponse = {
         data: [mockGame],
         meta: {
@@ -271,16 +265,20 @@ describe('GamesController', () => {
 
       jest.spyOn(service, 'search').mockResolvedValue(mockResponse);
 
-      const result = await controller.search(searchGameDto, '2', '5');
+      const result = await controller.search('Test', 'false', '1', '2', '5');
       expect(result).toEqual(mockResponse);
-      expect(service.search).toHaveBeenCalledWith(searchGameDto, 2, 5);
+      expect(service.search).toHaveBeenCalledWith(
+        {
+          name: 'Test',
+          completed: false,
+          platformId: 1,
+        },
+        2,
+        5,
+      );
     });
 
     it('should search games with default pagination', async () => {
-      const searchGameDto: SearchGameDto = {
-        name: 'Test',
-      };
-
       const mockResponse = {
         data: [mockGame],
         meta: {
@@ -293,18 +291,45 @@ describe('GamesController', () => {
 
       jest.spyOn(service, 'search').mockResolvedValue(mockResponse);
 
-      const result = await controller.search(searchGameDto);
+      const result = await controller.search('Test');
       expect(result).toEqual(mockResponse);
-      expect(service.search).toHaveBeenCalledWith(searchGameDto, 1, 10);
+      expect(service.search).toHaveBeenCalledWith(
+        {
+          name: 'Test',
+        },
+        1,
+        10,
+      );
+    });
+
+    it('should search games without completed filter when not provided', async () => {
+      const mockResponse = {
+        data: [mockGame],
+        meta: {
+          total: 1,
+          page: 1,
+          limit: 10,
+          totalPages: 1,
+        },
+      };
+
+      jest.spyOn(service, 'search').mockResolvedValue(mockResponse);
+
+      const result = await controller.search('Test', undefined, '1');
+      expect(result).toEqual(mockResponse);
+      expect(service.search).toHaveBeenCalledWith(
+        {
+          name: 'Test',
+          platformId: 1,
+        },
+        1,
+        10,
+      );
     });
 
     it('should throw BadRequestException for invalid page', async () => {
-      const searchGameDto: SearchGameDto = {
-        name: 'Test',
-      };
-
       try {
-        await controller.search(searchGameDto, '0');
+        await controller.search('Test', 'true', '1', '0');
         fail('Expected BadRequestException to be thrown');
       } catch (error: unknown) {
         if (error instanceof BadRequestException) {
@@ -316,12 +341,8 @@ describe('GamesController', () => {
     });
 
     it('should throw BadRequestException for invalid limit', async () => {
-      const searchGameDto: SearchGameDto = {
-        name: 'Test',
-      };
-
       try {
-        await controller.search(searchGameDto, '1', '0');
+        await controller.search('Test', 'true', '1', '1', '0');
         fail('Expected BadRequestException to be thrown');
       } catch (error: unknown) {
         if (error instanceof BadRequestException) {
