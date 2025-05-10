@@ -8,7 +8,6 @@ export class SearchGameDto {
 
   @IsBoolean()
   @IsOptional()
-  @Transform(({ value }) => value === 'true')
   completed?: boolean;
 
   @IsNumber()
