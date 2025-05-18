@@ -377,9 +377,7 @@ describe('GamesService', () => {
         leftJoinAndSelect: jest.fn().mockReturnThis(),
         where: jest.fn().mockReturnThis(),
         andWhere: jest.fn().mockReturnThis(),
-        orderBy: jest.fn().mockReturnThis(),
-        limit: jest.fn().mockReturnThis(),
-        getOne: jest.fn().mockResolvedValue(mockGame),
+        getMany: jest.fn().mockResolvedValue([mockGame]),
       };
 
       jest
@@ -396,8 +394,6 @@ describe('GamesService', () => {
         'game.isActive = :isActive',
         { isActive: true },
       );
-      expect(queryBuilder.orderBy).toHaveBeenCalledWith('RANDOM()');
-      expect(queryBuilder.limit).toHaveBeenCalledWith(1);
     });
 
     it('should throw NotFoundException if no games found', async () => {
@@ -405,9 +401,7 @@ describe('GamesService', () => {
         leftJoinAndSelect: jest.fn().mockReturnThis(),
         where: jest.fn().mockReturnThis(),
         andWhere: jest.fn().mockReturnThis(),
-        orderBy: jest.fn().mockReturnThis(),
-        limit: jest.fn().mockReturnThis(),
-        getOne: jest.fn().mockResolvedValue(null),
+        getMany: jest.fn().mockResolvedValue([]),
       };
 
       jest
