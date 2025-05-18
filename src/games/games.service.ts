@@ -148,19 +148,18 @@ export class GamesService {
   }
 
   async pick() {
-    const game = await this.gamesRepository
+    const games = await this.gamesRepository
       .createQueryBuilder('game')
       .where('game.completed = :completed', { completed: false })
       .andWhere('game.isActive = :isActive', { isActive: true })
       .leftJoinAndSelect('game.platform', 'platform')
-      .orderBy('RANDOM()')
-      .limit(1)
-      .getOne();
+      .getMany();
 
-    if (!game) {
+    if (!games.length) {
       throw new NotFoundException('No games found');
     }
 
-    return game;
+    const randomIndex = Math.floor(Math.random() * games.length);
+    return games[randomIndex];
   }
 }
